@@ -84,8 +84,8 @@
     </footer>
 
     <!-- Simple JS to simulate generation (We will connect actual API in the next step!) -->
-    <script>
-        function generateAds() {
+   <script>
+        async function generateAds() {
             const name = document.getElementById('productName').value;
             const desc = document.getElementById('productDesc').value;
 
@@ -94,15 +94,35 @@
                 return;
             }
 
-            document.getElementById('generateBtn').innerText = "Generating...";
+            const btn = document.getElementById('generateBtn');
+            btn.innerText = "Generating with AI... ⚡";
+            btn.disabled = true;
 
-            // Temporary simulation - We will replace this with real AI API call next!
-            setTimeout(() => {
-                document.getElementById('fbOutput').innerText = `🔥 NEW ARRIVAL: ${name}! 🔥\n\nLooking for the perfect style? We've got you covered! ${desc}\n\n🛒 Order yours today! Link in bio.`;
-                document.getElementById('waOutput').innerText = `*🌟 ${name} 🌟*\n\nHey there! hope you are doing well. Check out our latest product:\n\n👉 ${desc}\n\n💬 Reply to this message to order now! FREE Delivery available.`;
-                document.getElementById('hashOutput').innerText = `#${name.replace(/\s+/g, '')} #onlineshopping #shoplocal #instabusiness #trending`;
-                document.getElementById('generateBtn').innerText = "Generate Ads ✨";
-            }, 1000);
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productName: name, productDesc: desc })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('fbOutput').innerText = data.facebook;
+                    document.getElementById('waOutput').innerText = data.whatsapp;
+                    document.getElementById('hashOutput').innerText = data.hashtags;
+                } else {
+                    alert("Error: " + (data.error || "Something went wrong"));
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Failed to connect to AI server.");
+            } finally {
+                btn.innerText = "Generate Ads ✨";
+                btn.disabled = false;
+            }
         }
 
         function copyText(id) {
