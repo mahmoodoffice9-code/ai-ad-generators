@@ -1,8 +1,11 @@
 {
-  "routes": [
+  "version": 2,
+  "public": true,
+  "cleanUrls": true,
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     }
   ]
 }
